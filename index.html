@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAT Weird FNF Fan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-purple: #6a32ff; /* Matching your drawing's purple */
+            --dark-purple: #4b1ecc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--main-purple);
+            font-family: 'Permanent Marker', cursive;
+            overflow-x: hidden;
+        }
+
+        /* Top Header Section */
+        header {
+            background-color: var(--main-purple);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .logo-box {
+            background: #a282ff; /* Lighter purple bubble from your drawing */
+            border: 4px solid black;
+            border-radius: 50px;
+            display: inline-block;
+            padding: 10px 40px;
+            box-shadow: 5px 5px 0px black;
+        }
+
+        .logo-text {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 4rem;
+            color: white;
+            -webkit-text-stroke: 2px black;
+            margin: 0;
+        }
+
+        /* The White Slanted Section */
+        .white-bar {
+            background: white;
+            color: black;
+            padding: 60px 20px;
+            /* This creates the slanted effect */
+            transform: skewY(-2deg);
+            margin: -20px 0;
+            border-top: 5px solid black;
+            border-bottom: 5px solid black;
+            text-align: center;
+        }
+
+        .white-bar-content {
+            transform: skewY(2deg); /* Un-skews the text so it stays level */
+        }
+
+        .welcome-title { font-size: 2.5rem; margin-bottom: 10px; }
+        .random-container { font-size: 1.8rem; }
+
+        /* Navigation Links */
+        nav {
+            padding: 50px 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav li { margin: 15px 0; }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 2.5rem;
+            -webkit-text-stroke: 1.5px black;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffda00; /* Yellow highlight on hover */
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-box">
+            <h1 class="logo-text">D AT weird FNF fan</h1>
+        </div>
+    </header>
+
+    <div class="white-bar">
+        <div class="white-bar-content">
+            <h2 class="welcome-title">Welcome to my Pointless website!!!!</h2>
+            <p class="random-container">Random message: <span id="fact-display">Loading...</span></p>
+        </div>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="#">About me?</a></li>
+            <li><a href="#">Projects</a></li>
+            <li><a href="#">Social media</a></li>
+            <li><a href="#">My Original characters</a></li>
+        </ul>
+    </nav>
+
+    <script>
+        // Step 2: The Random Message Logic
+        const messages = [
+            "I Exist, I guess.",
+            "Beep Boop Skdoo Bep!",
+            "Probably playing FNF right now.",
+            "Error 404: Motivation not found.",
+            "This website is 100% pointless!",
+            "Stay weird, it's more fun."
+        ];
+
+        function showRandomMessage() {
+            const display = document.getElementById('fact-display');
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            display.innerText = messages[randomIndex];
+        }
+
+        // Run the function when the page loads
+        window.onload = showRandomMessage;
+    </script>
+</body>
+</html>
