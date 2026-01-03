@@ -3,410 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Select | DAT Weird FNF Fan</title>
+    <title>OC Gallery | DAT Weird FNF Fan</title>
     <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Permanent+Marker&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            --bg-purple: #9000ff; /* Bright purple from your drawing */
-            --box-magenta: #e6007e; /* The pink box color */
-            --border-color: #000;
+            --bg-purple: #9000ff;
+            --box-pink: #e6007e;
         }
 
         body {
             background-color: var(--bg-purple);
             font-family: 'Permanent Marker', cursive;
             margin: 0;
-            overflow: hidden; /* Keeps everything on one screen */
+            overflow: hidden;
             color: white;
-            user-select: none;
         }
 
-        /* --- Layout Grid --- */
-        .stage-container {
+        /* --- UI Layout --- */
+        .main-ui {
             display: grid;
-            grid-template-columns: 100px 1fr 1fr 300px 100px; /* Arrows, Char, Desc, Extra, Arrow */
-            grid-template-rows: 150px 1fr 100px;
+            grid-template-columns: 120px 1fr 350px 120px;
+            grid-template-rows: 100px 1fr 150px;
             height: 100vh;
-            gap: 10px;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        /* --- Navigation Arrows --- */
-        .arrow-btn {
-            background: none;
-            border: none;
-            font-size: 5rem;
-            color: white;
-            -webkit-text-stroke: 3px black;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-            z-index: 10;
+        .home-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: white;
+            color: black;
+            padding: 10px 20px;
+            border: 3px solid black;
+            text-decoration: none;
+            z-index: 100;
         }
-        .arrow-btn:hover { transform: scale(1.2); color: #ffda00; }
-        .arrow-btn:active { transform: scale(0.9); }
 
-        /* --- Title Card Area (Top Left/Center) --- */
-        .title-area {
-            grid-column: 2 / 5;
+        .title-card-area {
+            grid-column: 2 / 4;
+            text-align: center;
+        }
+
+        .title-img { height: 80px; filter: drop-shadow(4px 4px 0px black); }
+
+        /* --- Character Stage --- */
+        .stage {
+            grid-column: 2;
+            grid-row: 2 / 4;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end;
+            position: relative;
+        }
+
+        .char-sprite {
+            height: 85%;
+            transition: transform 0.6s ease-in-out, opacity 0.6s;
             z-index: 5;
         }
-        .title-img {
-            max-height: 120px;
-            filter: drop-shadow(5px 5px 0px black);
-        }
 
-        /* --- Character Stage (Center) --- */
-        .char-stage {
-            grid-column: 2 / 4;
-            grid-row: 2 / 4;
-            position: relative;
-            display: flex;
-            align-items: flex-end; /* Character stands on bottom */
-            justify-content: center;
-        }
+        /* Transition Animations */
+        .exit-left { transform: translateX(-120vw); opacity: 0; }
+        .exit-right { transform: translateX(120vw); opacity: 0; }
+        .enter-from-left { transform: translateX(-120vw); opacity: 0; }
+        .enter-from-right { transform: translateX(120vw); opacity: 0; }
+        .center-stage { transform: translateX(0); opacity: 1; }
 
-        .character-sprite {
-            height: 80%; /* Adjust based on your art size */
-            object-fit: contain;
-            transition: transform 0.5s ease-in-out, opacity 0.5s;
-        }
-
-        /* Classes for sliding animations */
-        .slide-out-left { transform: translateX(-100vw); opacity: 0; }
-        .slide-out-right { transform: translateX(100vw); opacity: 0; }
-        .slide-in { transform: translateX(0); opacity: 1; }
-        
-        /* Start position for incoming characters */
-        .off-screen-right { transform: translateX(100vw); opacity: 0; }
-        .off-screen-left { transform: translateX(-100vw); opacity: 0; }
-
-        /* --- Description Box (Pink Slanted) --- */
-        .desc-box {
-            grid-column: 2 / 4;
-            grid-row: 2; /* Sits behind character slightly? Or above? Adjusted to float top left */
-            align-self: start;
-            background: var(--box-magenta);
-            border: 5px solid black;
-            padding: 20px;
-            transform: rotate(-2deg);
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
-            max-width: 80%;
-            z-index: 2; /* Behind character */
-        }
-        .desc-text {
-            font-size: 2rem;
-            margin: 0;
-            text-shadow: 2px 2px 0px black;
-        }
-
-        /* --- Extra Images Box (Right Side) --- */
-        .extra-box {
-            grid-column: 4 / 5;
-            grid-row: 2 / 4;
-            background: var(--box-magenta);
-            border: 5px solid black;
-            border-left: 8px solid black; /* Thicker divider */
+        /* --- Info Side Bar --- */
+        .info-sidebar {
+            grid-column: 3;
+            grid-row: 2;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            overflow: hidden;
-        }
-        .extra-box:hover { transform: scale(1.02); }
-        
-        .extra-label {
-            font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 10px;
-            border-bottom: 3px solid black;
-            width: 100%;
-        }
-
-        .extra-preview-img {
-            width: 100%;
-            height: auto;
-            border: 3px solid white;
-            box-shadow: 3px 3px 0px black;
-        }
-
-        /* --- Gallery Modal (Hidden by default) --- */
-        .gallery-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .gallery-grid {
-            display: flex;
-            flex-wrap: wrap;
             gap: 15px;
-            justify-content: center;
-            max-width: 90%;
-            max-height: 80%;
+        }
+
+        .joke-box {
+            background: var(--box-pink);
+            border: 4px solid black;
+            padding: 10px;
+            transform: rotate(-2deg);
+            box-shadow: 6px 6px 0px black;
+        }
+
+        .bio-box {
+            background: white;
+            color: black;
+            border: 4px solid black;
+            padding: 15px;
+            font-family: sans-serif; /* Cleaner font for reading bios */
+            font-weight: bold;
+            font-size: 1.1rem;
+            max-height: 200px;
             overflow-y: auto;
         }
 
-        .gallery-thumb {
-            height: 150px;
-            border: 3px solid white;
+        .gallery-preview {
+            background: var(--box-pink);
+            border: 4px solid black;
+            padding: 10px;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .gallery-thumb:hover { transform: scale(1.1); border-color: yellow; }
-
-        /* Fullscreen View */
-        .full-img-view {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-        }
-        .full-img { max-height: 90%; max-width: 90%; }
-        .close-btn {
-            position: absolute; top: 20px; right: 20px;
-            color: white; font-size: 3rem; cursor: pointer;
+            text-align: center;
         }
 
-        /* --- Audio --- */
-        #audio-elements { display: none; }
+        .gallery-preview img { width: 100%; border: 2px solid black; }
 
+        .arrow-btn {
+            grid-row: 2;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 6rem;
+            -webkit-text-stroke: 3px black;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <div class="stage-container">
-        <button class="arrow-btn" style="grid-column: 1;" onclick="changeCharacter(-1)">◀</button>
+    <a href="index.html" class="home-btn">🏠 GO BACK</a>
 
-        <div class="title-area">
-            <img id="title-card" src="" alt="Character Name" class="title-img">
+    <div class="main-ui">
+        <button class="arrow-btn" onclick="changeChar(-1)">◀</button>
+
+        <div class="title-card-area">
+            <img id="title-img" src="" class="title-img">
         </div>
 
-        <div class="desc-box">
-            <p id="desc-text" class="desc-text">Loading...</p>
+        <div class="stage">
+            <img id="main-sprite" src="" class="char-sprite">
         </div>
 
-        <div class="char-stage">
-            <img id="char-sprite" src="" alt="Character" class="character-sprite">
-        </div>
-
-        <div class="extra-box" onclick="openGallery()">
-            <div class="extra-label">Random images Of themselves</div>
-            <img id="extra-preview" src="" alt="Random Art" class="extra-preview-img">
-            <p style="font-size: 0.8rem; margin-top:5px;">(Click to see all)</p>
-        </div>
-
-        <button class="arrow-btn" style="grid-column: 5;" onclick="changeCharacter(1)">▶</button>
-    </div>
-
-    <div id="gallery-modal" class="gallery-overlay">
-        <div class="close-btn" onclick="closeGallery()">✖</div>
-        <h2 style="color:white;">Gallery</h2>
-        <div class="gallery-grid" id="gallery-grid">
+        <div class="info-sidebar">
+            <div class="joke-box">
+                <p id="joke-text" style="margin:0; font-size: 1.5rem;"></p>
             </div>
-    </div>
+            <div class="bio-box">
+                <p id="bio-text" style="margin:0;"></p>
+            </div>
+            <div class="gallery-preview" onclick="alert('Gallery opening...')">
+                <p style="margin:0 0 5px 0;">ART GALLERY</p>
+                <img id="extra-img" src="">
+            </div>
+        </div>
 
-    <div id="full-view" class="full-img-view" onclick="closeFullView()">
-        <img id="full-img-target" class="full-img" src="">
-    </div>
-
-    <div id="audio-elements">
-        <audio id="sfx-step" src="sounds/footstep.mp3"></audio> <audio id="sfx-hover" src="sounds/hover.mp3"></audio>
+        <button class="arrow-btn" onclick="changeChar(1)">▶</button>
     </div>
 
     <script>
-        // ==========================================
-        //  CONFIG: TELL THE CODE ABOUT YOUR CHARACTERS
-        // ==========================================
         const characters = [
             {
-                id: "Ivy",               // Folder name
-                desc: "She is A stupid idiot.",
-                walkingFrames: 4,        // How many pngs in /walking/ folder?
-                selectedFrames: 4,       // How many pngs in /selected/ folder?
-                extraImages: 3,          // How many pngs in /extra/ folder?
-                animSpeed: 120           // Speed of animation (lower = faster)
+                id: "Ivy",
+                joke: "She is A stupid idiot.",
+                bio: "Ivy is a rhythmic traveler with a knack for getting into rap battles she isn't prepared for. Despite the 'idiot' label, she has a heart of gold and never misses a beat.",
+                walkingFrames: 2, // costume8 and costume9
+                extraImages: 1
             },
             {
-                id: "Character2",        // Example: Folder name of next char
-                desc: "He is kinda cool I guess.",
-                walkingFrames: 2,        
-                selectedFrames: 1,       
-                extraImages: 5,
-                animSpeed: 150
+                id: "Example2",
+                joke: "Literally a rock.",
+                bio: "This is a placeholder for your second character. They don't do much, but they are very solid.",
+                walkingFrames: 1,
+                extraImages: 1
             }
-            // Add comma above and copy-paste { } block to add more!
         ];
 
-        let currentIndex = 0;
-        let isAnimating = false;
-        let animInterval = null;
-        let currentFrame = 1;
-        let animationState = 'walking'; // 'walking' or 'selected'
+        let index = 0;
+        let isMoving = false;
+        const sprite = document.getElementById('main-sprite');
 
-        // DOM Elements
-        const sprite = document.getElementById('char-sprite');
-        const title = document.getElementById('title-card');
-        const desc = document.getElementById('desc-text');
-        const extraPrev = document.getElementById('extra-preview');
-
-        // --- 1. STARTUP ---
-        window.onload = () => {
-            loadCharacter(0, 'instant');
-        };
-
-        // --- 2. CHARACTER LOADING LOGIC ---
-        function loadCharacter(index, direction) {
-            const char = characters[index];
-            
-            // Update Text & Static Images
-            title.src = `images/characters/${char.id}/title_card.png`;
-            desc.innerText = char.desc;
-            
-            // Random Extra Image for the box
-            const randomExtra = Math.floor(Math.random() * char.extraImages) + 1;
-            extraPrev.src = `images/characters/${char.id}/extra/${randomExtra}.png`;
-
-            // Start Animation
-            stopAnimation();
-            
-            // If it's a transition (walking in)
-            if (direction === 'left' || direction === 'right') {
-                // First, play 'selected' animation once they arrive, then loop walk?
-                // Or just loop walk. Let's Loop Walk based on your "walking" request.
-                startAnimationLoop(char, 'walking');
-            } else {
-                startAnimationLoop(char, 'walking');
-            }
+        function loadData(i) {
+            const c = characters[i];
+            document.getElementById('title-img').src = `images/characters/${c.id}/title_card.png`;
+            document.getElementById('joke-text').innerText = c.joke;
+            document.getElementById('bio-text').innerText = c.bio;
+            document.getElementById('extra-img').src = `images/characters/${c.id}/extra/1.png`;
+            sprite.src = `images/characters/${c.id}/walking/1.png`;
         }
 
-        // --- 3. ANIMATION SYSTEM (Frame Swapper) ---
-        function startAnimationLoop(char, type) {
-            animationState = type;
-            currentFrame = 1;
-            
-            const folder = type; // 'walking' or 'selected'
-            const maxFrames = type === 'walking' ? char.walkingFrames : char.selectedFrames;
+        function changeChar(dir) {
+            if (isMoving) return;
+            isMoving = true;
 
-            animInterval = setInterval(() => {
-                // Update Image Source
-                sprite.src = `images/characters/${char.id}/${folder}/${currentFrame}.png`;
-                
-                // Advance Frame
-                currentFrame++;
-                if (currentFrame > maxFrames) {
-                    currentFrame = 1; 
-                    // If we wanted 'selected' to play only once, we would add logic here to switch to 'walking'
-                }
-            }, char.animSpeed);
-        }
+            // 1. Exit current character
+            if (dir === 1) sprite.className = "char-sprite exit-left";
+            else sprite.className = "char-sprite exit-right";
 
-        function stopAnimation() {
-            if (animInterval) clearInterval(animInterval);
-        }
-
-        // --- 4. SWAP LOGIC (The Walking Effect) ---
-        function changeCharacter(direction) {
-            if (isAnimating) return; // Prevent spam clicking
-            isAnimating = true;
-
-            const oldCharImg = sprite;
-            
-            // 1. Walk Out Old Character
-            if (direction === 1) {
-                oldCharImg.classList.add('slide-out-left'); // Walk left (off screen)
-            } else {
-                oldCharImg.classList.add('slide-out-right'); // Walk right
-            }
-
-            // 2. Wait for slide out, then swap data
             setTimeout(() => {
-                // Update Index
-                currentIndex += direction;
-                if (currentIndex >= characters.length) currentIndex = 0;
-                if (currentIndex < 0) currentIndex = characters.length - 1;
+                // 2. Update data
+                index = (index + dir + characters.length) % characters.length;
+                loadData(index);
 
-                // Reset Position for New Character (Start Off-screen)
-                oldCharImg.classList.remove('slide-out-left', 'slide-out-right');
-                
-                if (direction === 1) {
-                    oldCharImg.classList.add('off-screen-right'); // Prepare to enter from right
-                } else {
-                    oldCharImg.classList.add('off-screen-left'); // Prepare to enter from left
-                }
+                // 3. Position new character at OPPOSITE side
+                if (dir === 1) sprite.className = "char-sprite enter-from-right";
+                else sprite.className = "char-sprite enter-from-left";
 
-                // Load Data
-                loadCharacter(currentIndex, direction === 1 ? 'right' : 'left');
-
-                // 3. Walk In New Character (Small delay to allow DOM update)
+                // 4. Slide to center
                 setTimeout(() => {
-                    oldCharImg.classList.remove('off-screen-right', 'off-screen-left');
-                    oldCharImg.classList.add('slide-in'); // Slide to center
-
-                    // Play "Selected" animation logic could go here if you want a specific pose on entry
-                    
-                    // Cleanup classes after animation finishes
-                    setTimeout(() => {
-                        oldCharImg.classList.remove('slide-in');
-                        isAnimating = false;
-                    }, 500);
+                    sprite.className = "char-sprite center-stage";
+                    isMoving = false;
                 }, 50);
-
-            }, 500); // Matches CSS transition time
+            }, 600);
         }
 
-        // --- 5. GALLERY LOGIC ---
-        function openGallery() {
-            const char = characters[currentIndex];
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = ""; // Clear old
-
-            // Generate Thumbnails
-            for (let i = 1; i <= char.extraImages; i++) {
-                const img = document.createElement('img');
-                img.src = `images/characters/${char.id}/extra/${i}.png`;
-                img.className = 'gallery-thumb';
-                img.onclick = (e) => {
-                    e.stopPropagation(); // Prevent closing
-                    openFullView(img.src);
-                };
-                grid.appendChild(img);
-            }
-
-            document.getElementById('gallery-modal').style.display = 'flex';
-        }
-
-        function closeGallery() {
-            document.getElementById('gallery-modal').style.display = 'none';
-        }
-
-        function openFullView(src) {
-            document.getElementById('full-img-target').src = src;
-            document.getElementById('full-view').style.display = 'flex';
-        }
-
-        function closeFullView() {
-            document.getElementById('full-view').style.display = 'none';
-        }
-
+        // Initial Load
+        loadData(0);
     </script>
 </body>
 </html>
