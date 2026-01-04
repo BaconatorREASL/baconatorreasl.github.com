@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | DAT Weird FNF Fan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fnf-purple: #6a32ff;
+            --fnf-grey: #808080;
+            --bar-green: #00e600;
+            --bar-orange: #ffaa00;
+            --bar-red: #ff0000;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--fnf-purple);
+            font-family: 'Permanent Marker', cursive;
+            color: white;
+            padding-bottom: 50px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin: 20px;
+            padding: 10px 20px;
+            background: white;
+            color: black;
+            text-decoration: none;
+            border: 4px solid black;
+            box-shadow: 4px 4px 0px black;
+        }
+
+        header { text-align: center; padding: 20px; }
+        h1 { font-size: 3.5rem; -webkit-text-stroke: 2px black; margin: 0; }
+
+        /* Section Separators */
+        .section-title {
+            background: black;
+            color: white;
+            padding: 10px 40px;
+            font-size: 2rem;
+            transform: skewX(-10deg);
+            display: inline-block;
+            margin: 40px 0 20px 40px;
+            border: 3px solid white;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 0 40px;
+            max-width: 1200px;
+        }
+
+        /* Card Style */
+        .project-card {
+            background: white;
+            border: 5px solid black;
+            padding: 20px;
+            color: black;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .thumb-placeholder {
+            width: 100%;
+            height: 180px;
+            background: #ddd;
+            border: 3px solid black;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .thumb-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+
+        .project-title { font-size: 1.8rem; margin: 0; }
+        .project-desc { font-family: sans-serif; font-weight: bold; margin: 10px 0; font-size: 0.9rem;}
+
+        /* --- BUTTONS (For Completed, Working For, Cancelled) --- */
+        .view-btn {
+            position: relative;
+            display: block;
+            margin-top: auto;
+            padding: 10px;
+            background: var(--fnf-purple);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border: 3px solid black;
+            font-size: 1.2rem;
+            transition: background 0.2s;
+        }
+        .view-btn:hover { background-color: var(--fnf-grey); }
+        .view-btn:hover::before {
+            content: "▶";
+            position: absolute;
+            left: 10px;
+            color: white;
+        }
+
+        /* --- PROGRESS BARS (For WIP, On Hold, Cancelled) --- */
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border: 3px solid black;
+            height: 30px;
+            margin-top: auto;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--bar-green);
+            width: 0%; /* Changed via inline style */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 5px;
+            box-sizing: border-box;
+            color: black;
+            font-size: 0.8rem;
+            font-family: sans-serif;
+            font-weight: bold;
+        }
+        
+        /* Colors for different states */
+        .bar-wip { background-color: var(--bar-green); }
+        .bar-hold { background-color: var(--bar-orange); }
+        .bar-cancelled { background-color: var(--bar-red); }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">◀ BACK TO HOME</a>
+    <header><h1>PROJECTS</h1></header>
+
+    <div class="section-title">COMPLETED</div>
+    <div class="project-grid">
+        <div class="project-card">
+            <div class="thumb-placeholder"><img src="images/vs_guy.png" alt="vs Guy"></div>
+            <div>
+                <h2 class="project-title">vs Guy</h2>
+                <p class="project-desc">A full week mod against some guy.</p>
+            </div>
+            <a href="https://gamebanana.com" target="_blank" class="view-btn">PLAY MOD</a>
+        </div>
+    </div>
+
+    <div class="section-title">WORKING FOR</div>
+    <div class="project-grid">
+        <div class="project-card">
+            <div class="thumb-placeholder"><img src="images/vs_yeeps.png" alt="vs YEEPS"></div>
+            <div>
+                <h2 class="project-title">vs YEEPS</h2>
+                <p class="project-desc">Helping out on this project!</p>
+            </div>
+            <a href="#" class="view-btn">VIEW PAGE</a>
+        </div>
+    </div>
+
+    <div class="section-title">WIP & ON HOLD</div>
+    <div class="project-grid">
+        
+        <div class="project-card">
+            <div class="thumb-placeholder"><img src="images/funky_puppet.png" alt="Funky Puppet"></div>
+            <div>
+                <h2 class="project-title">Funky Puppet</h2>
+                <p class="project-desc">Puppet madness coming soon.</p>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill bar-wip" style="width: 45%;">45%</div>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="thumb-placeholder"><img src="images/vs_guy_v2.png" alt="VS GUY v2"></div>
+            <div>
+                <h2 class="project-title">VS GUY v2</h2>
+                <p class="project-desc">The sequel update.</p>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill bar-wip" style="width: 15%;">15%</div>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="thumb-placeholder"><img src="images/jeffy.png" alt="Jeffy Unlimited"></div>
+            <div>
+                <h2 class="project-title">jeffy unlimited Facsimile</h2>
+                <p class="project-desc">Currently paused.</p>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill bar-hold" style="width: 60%;">ON HOLD</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="section-title">CANCELLED</div>
+    <div class="project-grid">
+        
+        <div class="project-card" style="opacity: 0.8;">
+            <div class="thumb-placeholder"><img src="images/yeeps_site.png" alt="Yeeps Website"></div>
+            <div>
+                <h2 class="project-title">yeeps shere Website</h2>
+                <p class="project-desc">Scrapped project.</p>
+            </div>
+            
+            <div class="progress-container" style="margin-bottom: 10px;">
+                <div class="progress-fill bar-cancelled" style="width: 100%;">DEAD</div>
+            </div>
+            <a href="#" class="view-btn" style="background: #333;">ARCHIVE LINK</a>
+        </div>
+
+    </div>
+
+    <audio id="hover-sfx" src="sounds/hover.mp3"></audio>
+    <script>
+        const sfx = document.getElementById('hover-sfx');
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                sfx.currentTime = 0;
+                sfx.play().catch(()=>{});
+            });
+        });
+    </script>
+
+</body>
+</html>
