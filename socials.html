@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socials | DAT Weird FNF Fan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fnf-purple: #6a32ff;
+            --fnf-grey: #808080;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--fnf-purple);
+            font-family: 'Permanent Marker', cursive;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Home Button */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: white;
+            color: black;
+            text-decoration: none;
+            border: 4px solid black;
+            box-shadow: 4px 4px 0px black;
+            font-size: 1.2rem;
+        }
+
+        header { margin-top: 60px; margin-bottom: 20px; text-align: center; }
+        h1 { font-size: 4rem; -webkit-text-stroke: 3px black; margin: 0; text-shadow: 5px 5px 0px black; }
+
+        /* The Link Container */
+        .social-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        /* The Big Buttons */
+        .social-card {
+            display: block;
+            background: white;
+            color: black;
+            text-decoration: none;
+            border: 5px solid black;
+            padding: 20px;
+            font-size: 2rem;
+            position: relative; /* Needed for the arrow */
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+            text-align: center;
+        }
+
+        .social-card span {
+            display: block;
+            font-size: 1rem;
+            font-family: sans-serif;
+            font-weight: bold;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* --- THE HOVER EFFECT (Grey Box + Arrow) --- */
+        .social-card:hover {
+            background-color: var(--fnf-grey); /* Grey Box */
+            color: white;
+            transform: scale(1.02); /* Slight pop */
+            cursor: pointer;
+        }
+
+        .social-card:hover span { color: white; }
+
+        /* The Arrow ▶ */
+        .social-card:hover::before {
+            content: "▶";
+            position: absolute;
+            left: -50px; /* Positions arrow to the left */
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 3rem;
+            -webkit-text-stroke: 2px black;
+        }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">◀ HOME</a>
+
+    <header>
+        <h1>STALK ME</h1>
+    </header>
+
+    <div class="social-list">
+        
+        <a href="https://www.youtube.com/@Datweirdyeep" target="_blank" class="social-card">
+            YOUTUBE
+            <span>Where I post videos sometimes</span>
+        </a>
+
+        <a href="https://x.com/Peppino109" target="_blank" class="social-card">
+            TWITTER / X
+            <span>The bird app (or whatever it is now)</span>
+        </a>
+
+        <a href="https://gamebanana.com/members/4648383" target="_blank" class="social-card">
+            GAMEBANANA
+            <span>Download my mods here!</span>
+        </a>
+
+        <a href="https://discord.com/" target="_blank" class="social-card">
+            DISCORD
+            <span>Join my server maybe?</span>
+        </a>
+
+    </div>
+
+    <audio id="hover-sfx" src="sounds/hover.mp3"></audio>
+    <script>
+        const sfx = document.getElementById('hover-sfx');
+        const cards = document.querySelectorAll('.social-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                sfx.currentTime = 0;
+                sfx.play().catch(() => {});
+            });
+        });
+    </script>
+
+</body>
+</html>
