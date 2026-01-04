@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Music | DAT Weird FNF Fan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fnf-purple: #6a32ff;
+            --fnf-grey: #808080;
+            --box-black: #000;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--fnf-purple);
+            font-family: 'Permanent Marker', cursive;
+            color: white;
+            overflow: hidden; /* Keeps it like a game menu */
+        }
+
+        /* Home Button */
+        .back-btn {
+            position: absolute;
+            top: 20px; left: 20px;
+            padding: 10px 20px;
+            background: white; color: black;
+            text-decoration: none;
+            border: 4px solid black;
+            box-shadow: 4px 4px 0px black;
+            z-index: 100;
+        }
+
+        /* --- Main Layout --- */
+        .music-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 100vh;
+            padding: 50px;
+            box-sizing: border-box;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* --- Left Side: The Player --- */
+        .player-box {
+            background: white;
+            border: 6px solid black;
+            padding: 30px;
+            color: black;
+            transform: rotate(-2deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+        }
+
+        /* Album Art / Spinning Disc */
+        .album-art {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 8px solid black;
+            background: #333;
+            object-fit: cover;
+            margin-bottom: 20px;
+            transition: animation 0.5s;
+        }
+
+        .spinning { animation: spin 4s linear infinite; }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .song-info h2 { font-size: 2.5rem; margin: 0; text-align: center; }
+        .song-info p { font-family: sans-serif; font-weight: bold; margin: 5px 0 20px 0; text-align: center; color: #555; }
+
+        /* Custom Audio Controls */
+        .controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .ctrl-btn {
+            background: black;
+            color: white;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .ctrl-btn:hover { background: var(--fnf-purple); transform: scale(1.1); }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background: #ddd;
+            height: 20px;
+            border: 3px solid black;
+            margin-top: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--fnf-purple);
+            width: 0%;
+        }
+
+        /* --- Right Side: The Song List --- */
+        .playlist-box {
+            height: 80vh;
+            overflow-y: auto;
+            padding-right: 20px;
+        }
+
+        .song-item {
+            display: block;
+            font-size: 2.5rem;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            margin-bottom: 15px;
+            -webkit-text-stroke: 2px black;
+            position: relative;
+            transition: transform 0.1s;
+        }
+
+        /* HOVER EFFECT: Grey Box + Arrow */
+        .song-item:hover {
+            background-color: var(--fnf-grey);
+            cursor: pointer;
+            transform: translateX(20px); /* Moves slightly right */
+        }
+
+        .song-item:hover::before {
+            content: "▶";
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 2rem;
+            -webkit-text-stroke: 2px black;
+        }
+
+        /* Active Song Style */
+        .active-song {
+            color: #ffff00; /* Yellow text */
+        }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">◀ HOME</a>
+
+    <div class="music-container">
+        
+        <div class="player-box">
+            <img id="album-art" src="images/music_icon.png" class="album-art" alt="Album Art">
+            
+            <div class="song-info">
+                <h2 id="track-title">SELECT A SONG</h2>
+                <p id="track-artist">To start listening</p>
+            </div>
+
+            <div class="controls">
+                <button class="ctrl-btn" onclick="prevSong()">⏮</button>
+                <button class="ctrl-btn" onclick="togglePlay()" id="play-btn">▶</button>
+                <button class="ctrl-btn" onclick="nextSong()">⏭</button>
+            </div>
+
+            <div class="progress-container" onclick="seek(event)">
+                <div id="progress" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="playlist-box" id="playlist">
+            </div>
+
+    </div>
+
+    <audio id="main-audio"></audio>
+    <audio id="hover-sfx" src="sounds/hover.mp3"></audio>
+
+    <script>
+        // --- 1. CONFIG: YOUR SONGS HERE ---
+        const songs = [
+            {
+                title: "YEEPER V3",
+                artist: "DatWeirdFNFFan",
+                file: "sounds/music/yeepet.mp3",
+                cover: "images/music/yeepers.png" 
+            },
+            {
+                title: "GUY v2 (lost the old one even though it's practically the same /:)",
+                artist: "DatWeirdFNFFan",
+                file: "sounds/music/song2.mp3",
+                cover: "images/vs_guy.jpg"
+            },
+            {
+                title: "emptiness v2.5",
+                artist: "DatWeirdFNFFan",
+                file: "sounds/music/song3.mp3",
+                cover: "images/music_icon.png"
+            }
+        ];
+
+        // --- 2. LOGIC ---
+        let currentIdx = 0;
+        let isPlaying = false;
+        const audio = document.getElementById('main-audio');
+        const playBtn = document.getElementById('play-btn');
+        const albumArt = document.getElementById('album-art');
+        const playlistDiv = document.getElementById('playlist');
+        const hoverSfx = document.getElementById('hover-sfx');
+
+        // Build Playlist
+        songs.forEach((song, index) => {
+            const div = document.createElement('div');
+            div.className = 'song-item';
+            div.innerText = song.title;
+            
+            // Click to Play
+            div.onclick = () => loadSong(index);
+            
+            // Hover Sound Effect
+            div.onmouseenter = () => {
+                hoverSfx.currentTime = 0;
+                hoverSfx.play().catch(()=>{});
+            };
+
+            playlistDiv.appendChild(div);
+        });
+
+        function loadSong(index) {
+            currentIdx = index;
+            const song = songs[index];
+            
+            // Update Visuals
+            document.getElementById('track-title').innerText = song.title;
+            document.getElementById('track-artist').innerText = song.artist;
+            albumArt.src = song.cover;
+            
+            // Update Audio
+            audio.src = song.file;
+            playMusic();
+            
+            // Highlight in list
+            updateActiveList();
+        }
+
+        function playMusic() {
+            audio.play();
+            isPlaying = true;
+            playBtn.innerText = "||"; // Pause symbol
+            albumArt.classList.add('spinning');
+        }
+
+        function pauseMusic() {
+            audio.pause();
+            isPlaying = false;
+            playBtn.innerText = "▶";
+            albumArt.classList.remove('spinning');
+        }
+
+        function togglePlay() {
+            if (audio.src) {
+                if (isPlaying) pauseMusic();
+                else playMusic();
+            }
+        }
+
+        function nextSong() {
+            currentIdx = (currentIdx + 1) % songs.length;
+            loadSong(currentIdx);
+        }
+
+        function prevSong() {
+            currentIdx = (currentIdx - 1 + songs.length) % songs.length;
+            loadSong(currentIdx);
+        }
+
+        function updateActiveList() {
+            const items = document.querySelectorAll('.song-item');
+            items.forEach((item, idx) => {
+                if (idx === currentIdx) item.classList.add('active-song');
+                else item.classList.remove('active-song');
+            });
+        }
+
+        // Progress Bar Logic
+        audio.ontimeupdate = () => {
+            if (audio.duration) {
+                const pct = (audio.currentTime / audio.duration) * 100;
+                document.getElementById('progress').style.width = pct + "%";
+            }
+        };
+
+        // Click on bar to seek
+        function seek(e) {
+            const width = e.target.parentElement.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        }
+
+        // Auto play next song when finished
+        audio.onended = nextSong;
+
+    </script>
+</body>
+</html>
