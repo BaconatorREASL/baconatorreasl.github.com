@@ -106,4 +106,216 @@
             position: relative;
             cursor: pointer;
         }
-        .progress-
+        .progress-fill {
+            height: 100%;
+            background: var(--fnf-purple);
+            width: 0%;
+            pointer-events: none; /* Allows click to pass through to container */
+        }
+
+        /* --- Right Side: The Song List --- */
+        .playlist-box {
+            height: 80vh;
+            overflow-y: auto;
+            padding-right: 20px;
+        }
+
+        .song-item {
+            display: block;
+            font-size: 2.2rem;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            margin-bottom: 15px;
+            -webkit-text-stroke: 2px black;
+            position: relative;
+            transition: transform 0.1s;
+        }
+
+        /* HOVER EFFECT: Grey Box + Arrow */
+        .song-item:hover {
+            background-color: var(--fnf-grey);
+            cursor: pointer;
+            transform: translateX(20px);
+        }
+
+        .song-item:hover::before {
+            content: "▶";
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 2rem;
+            -webkit-text-stroke: 2px black;
+        }
+
+        .active-song {
+            color: #ffff00; /* Yellow text for the currently playing song */
+        }
+
+        /* Scrollbar styling for FNF vibe */
+        .playlist-box::-webkit-scrollbar { width: 10px; }
+        .playlist-box::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .playlist-box::-webkit-scrollbar-thumb { background: white; border: 2px solid black; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">◀ HOME</a>
+
+    <div class="music-container">
+        
+        <div class="player-box">
+            <img id="album-art" src="images/music_icon.png" class="album-art" alt="Album Art">
+            
+            <div class="song-info">
+                <h2 id="track-title">SELECT A SONG</h2>
+                <p id="track-artist">To start listening</p>
+            </div>
+
+            <div class="controls">
+                <button class="ctrl-btn" onclick="prevSong()">⏮</button>
+                <button class="ctrl-btn" onclick="togglePlay()" id="play-btn">▶</button>
+                <button class="ctrl-btn" onclick="nextSong()">⏭</button>
+            </div>
+
+            <div class="progress-container" id="p-cont" onclick="seek(event)">
+                <div id="progress" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="playlist-box" id="playlist">
+            </div>
+
+    </div>
+
+    <audio id="main-audio"></audio>
+    <audio id="hover-sfx" src="sounds/hover.mp3"></audio>
+
+    <script>
+        // --- 1. CONFIG: YOUR UPDATED TRACKLIST ---
+        const songs = [
+            {
+                title: "YEEPER V3",
+                artist: "Funky Puppet",
+                file: "sounds/music/yeepet.mp3",
+                cover: "images/music/yeepers.png"
+            },
+            {
+                title: "GUY v2",
+                artist: "Vs guy",
+                file: "sounds/music/song2.mp3",
+                cover: "images/vs_guy.jpg"
+            },
+            {
+                title: "emptiness v2.5",
+                artist: "VS YEEP",
+                file: "sounds/music/song3.mp3",
+                cover: "images/music_icon.png"
+            }
+        ];
+
+        // --- 2. LOGIC ---
+        let currentIdx = 0;
+        let isPlaying = false;
+        const audio = document.getElementById('main-audio');
+        const playBtn = document.getElementById('play-btn');
+        const albumArt = document.getElementById('album-art');
+        const playlistDiv = document.getElementById('playlist');
+        const hoverSfx = document.getElementById('hover-sfx');
+
+        // Build Playlist UI
+        songs.forEach((song, index) => {
+            const div = document.createElement('div');
+            div.className = 'song-item';
+            div.innerText = song.title;
+            
+            div.onclick = () => loadSong(index);
+            
+            div.onmouseenter = () => {
+                hoverSfx.currentTime = 0;
+                hoverSfx.play().catch(()=>{});
+            };
+
+            playlistDiv.appendChild(div);
+        });
+
+        function loadSong(index) {
+            currentIdx = index;
+            const song = songs[index];
+            
+            document.getElementById('track-title').innerText = song.title;
+            document.getElementById('track-artist').innerText = song.artist;
+            albumArt.src = song.cover;
+            
+            audio.src = song.file;
+            audio.load(); // Ensure the new file is loaded
+            playMusic();
+            updateActiveList();
+        }
+
+        function playMusic() {
+            audio.play().then(() => {
+                isPlaying = true;
+                playBtn.innerText = "||"; 
+                albumArt.classList.add('spinning');
+            }).catch(e => console.log("Playback blocked until user interaction."));
+        }
+
+        function pauseMusic() {
+            audio.pause();
+            isPlaying = false;
+            playBtn.innerText = "▶";
+            albumArt.classList.remove('spinning');
+        }
+
+        function togglePlay() {
+            if (!audio.src) return;
+            if (isPlaying) pauseMusic();
+            else playMusic();
+        }
+
+        function nextSong() {
+            currentIdx = (currentIdx + 1) % songs.length;
+            loadSong(currentIdx);
+        }
+
+        function prevSong() {
+            currentIdx = (currentIdx - 1 + songs.length) % songs.length;
+            loadSong(currentIdx);
+        }
+
+        function updateActiveList() {
+            const items = document.querySelectorAll('.song-item');
+            items.forEach((item, idx) => {
+                if (idx === currentIdx) item.classList.add('active-song');
+                else item.classList.remove('active-song');
+            });
+        }
+
+        // Progress Bar update
+        audio.ontimeupdate = () => {
+            if (audio.duration) {
+                const pct = (audio.currentTime / audio.duration) * 100;
+                document.getElementById('progress').style.width = pct + "%";
+            }
+        };
+
+        // Seek functionality
+        function seek(e) {
+            if(!audio.duration) return;
+            const container = document.getElementById('p-cont');
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left; 
+            const width = rect.width;
+            const pct = x / width;
+            audio.currentTime = pct * audio.duration;
+        }
+
+        audio.onended = nextSong;
+
+    </script>
+</body>
+</html>
